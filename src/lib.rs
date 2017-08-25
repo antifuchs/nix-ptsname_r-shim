@@ -1,12 +1,13 @@
 extern crate nix;
-use nix::pty::PtyMaster;
-use nix::{Result, libc, Error};
 
-use std::os::unix::prelude::*;
-use std::ffi::CStr;
-
+// Fallback to Nix ptsname_r on Android and Linux
 #[cfg(any(target_os = "android", target_os = "linux"))]
 pub use nix::pty::ptsname_r;
+
+#[cfg(any(target_os = "macos", target_os = "ios"))]
+use nix::pty::PtyMaster;
+#[cfg(any(target_os = "macos", target_os = "ios"))]
+use nix::Result;
 
 /// (emulated on macOS) Get the name of the slave pseudoterminal (see
 /// [ptsname(3)](http://man7.org/linux/man-pages/man3/ptsname.3.html))
@@ -27,7 +28,10 @@ pub fn ptsname_r(fd: &PtyMaster) -> Result<String> {
     // https://blog.tarq.io/ptsname-on-osx-with-rust/
     // and its derivative
     // https://github.com/philippkeller/rexpect/blob/a71dd02/src/process.rs#L67
-    use libc::{c_ulong, ioctl, TIOCPTYGNAME};
+    use nix::Error;
+    use nix::libc::{c_ulong, ioctl, TIOCPTYGNAME};
+    use std::os::unix::prelude::*;
+    use std::ffi::CStr;
 
     // the buffer size on OSX is 128, defined by sys/ttycom.h
     let buf: [i8; 128] = [0; 128];
