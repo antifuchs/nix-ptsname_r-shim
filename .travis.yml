@@ -62,9 +62,6 @@ script:
 
 after_script: set +e
 
-before_deploy:
-  - sh ci/before_deploy.sh
-
 deploy:
   on:
     condition: never
