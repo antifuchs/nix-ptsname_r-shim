@@ -62,10 +62,6 @@ script:
 
 after_script: set +e
 
-deploy:
-  on:
-    condition: never
-
 cache: cargo
 before_cache:
   # Travis can't cache files that are not readable by "others"
