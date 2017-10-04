@@ -1,7 +1,7 @@
 [package]
 authors = ["Nelson Chen <nelson.chen@mobivity.com>"]
 name = "nix-ptsname_r-shim"
-version = "0.1.1"
+version = "0.1.2"
 license = "MIT OR Apache-2.0"
 description = "Nix `ptsname_r` shim"
 documentation = "https://docs.rs/nix/nix-ptsname_r-shim"
