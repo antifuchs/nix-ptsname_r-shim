@@ -5,6 +5,47 @@
 
 Using this shim's `ptsname_r()` over Nix's `ptsname_r()` on Linux will make your application portable to macOS with regards to `ptsname_r()`. The `ptsname_r()` exposed by this crate will simply reference Nix's original `ptsname_r()` on Linux and use its shim on macOS. The signature of the function is identical and the behavior is identical.
 
+## Usage
+
+Here's an example of how to convert and use this shim for an existing program using `ptsname_r` from Nix.
+
+### Before
+
+*Using Nix's `ptsname_r()`, which is not available on macOS.*
+
+```rust
+extern crate nix;
+use nix::fcntl::O_RDWR;
+use nix::pty::{posix_openpt, ptsname_r};
+
+fn main() {
+    let master_fd = posix_openpt(O_RDWR).unwrap();
+    let slave_name = ptsname_r(&master_fd).unwrap();
+    println!("Slave Name was: {}", slave_name);
+}
+```
+
+### After
+
+*Using Nix `ptsname_r()` Shim's `ptsname_r()`, which makes equivalent functionality available on macOS but falls back to Nix's `ptsname_r()` on other platforms.*
+
+```rust
+extern crate nix;
+use nix::fcntl::O_RDWR;
+// Remove use of Nix's ptsname_r
+use nix::pty::posix_openpt;
+
+// Add this crate and use its ptsname_r
+extern crate nix_ptsname_r_shim;
+use nix_ptsname_r_shim::ptsname_r;
+
+fn main() {
+    let master_fd = posix_openpt(O_RDWR).unwrap();
+    let slave_name = ptsname_r(&master_fd).unwrap();
+    println!("Slave Name was: {}", slave_name);
+}
+```
+
 ## Background
 
 In POSIX, `ptsname()` is used on a file descriptor created by `posix_openpt` to get the name of the slave psuedoterminal.
