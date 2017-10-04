@@ -1,6 +1,7 @@
 # Nix `ptsname_r()` Shim
 
 [![Build Status](https://travis-ci.org/Mobivity/nix-ptsname_r-shim.svg?branch=master)](https://travis-ci.org/Mobivity/nix-ptsname_r-shim)
+[![](https://meritbadge.herokuapp.com/nix-ptsname_r-shim)](https://crates.io/crates/nix-ptsname_r-shim)
 
 Using this shim's `ptsname_r()` over Nix's `ptsname_r()` on Linux will make your application portable to macOS with regards to `ptsname_r()`. The `ptsname_r()` exposed by this crate will simply reference Nix's original `ptsname_r()` on Linux and use its shim on macOS. The signature of the function is identical and the behavior is identical.
 
