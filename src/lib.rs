@@ -46,9 +46,7 @@ pub fn ptsname_r(fd: &PtyMaster) -> Result<String> {
     unsafe {
         match ioctl(fd.as_raw_fd(), TIOCPTYGNAME as c_ulong, &buf) {
             0 => {
-                let res = CStr::from_ptr(buf.as_ptr())
-                    .to_string_lossy()
-                    .into_owned();
+                let res = CStr::from_ptr(buf.as_ptr()).to_string_lossy().into_owned();
                 Ok(res)
             }
             _ => Err(Error::last()),
@@ -58,18 +56,17 @@ pub fn ptsname_r(fd: &PtyMaster) -> Result<String> {
 
 #[cfg(test)]
 mod tests {
-    use nix::fcntl::O_RDWR;
+    use nix::fcntl::OFlag;
     use nix::pty::posix_openpt;
     use std::os::unix::prelude::*;
     use super::ptsname_r;
 
     /// Test data copying of `ptsname_r`
     #[test]
-    #[cfg(any(target_os = "android", target_os = "linux", target_os = "macos",
-                target_os = "ios"))]
+    #[cfg(any(target_os = "android", target_os = "linux", target_os = "macos", target_os = "ios"))]
     fn test_ptsname_r_copy() {
         // Open a new PTTY master
-        let master_fd = posix_openpt(O_RDWR).unwrap();
+        let master_fd = posix_openpt(OFlag::O_RDWR).unwrap();
         assert!(master_fd.as_raw_fd() > 0);
 
         // Get the name of the slave
